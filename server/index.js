@@ -15,6 +15,17 @@ connectDB();
 // set up api routes
 app.use('/api/auth', authRouter)
 
+// error displaying middleware
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || 'Internal server error'
+    return res.status(statusCode).json({
+        success: false,
+        message,
+        statusCode
+    })
+});
+
 // start server
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
