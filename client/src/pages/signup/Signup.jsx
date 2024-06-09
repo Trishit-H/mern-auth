@@ -14,8 +14,22 @@ function Signup() {
         }));
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const response = await fetch('api/auth/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+    }
+
     return (
-        <div className='signup-wrapper'>
+        <div onSubmit={handleSubmit} className='signup-wrapper'>
             <h1 className='title'>Sign Up</h1>
             <form className="form-wrapper">
                 <input
