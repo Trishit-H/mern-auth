@@ -7,6 +7,9 @@ function Signup() {
 
     const [formData, setFormData] = useState({});
 
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+
     const handleChange = (e) => {
         setFormData(prevFormData => ({
             ...prevFormData,
@@ -17,20 +20,38 @@ function Signup() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const response = await fetch('api/auth/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
+        try {
+            setLoading(true)
+            setError(false);
 
-        const data = await response.json();
+            const response = await fetch('api/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            setLoading(false);
+
+            if (!data.success) {
+                setError(true);
+                return
+            }
+        } catch (err) {
+            setLoading(false);
+            setError(true)
+        }
     }
 
     return (
         <div onSubmit={handleSubmit} className='signup-wrapper'>
             <h1 className='title'>Sign Up</h1>
+            {
+                error && <p className='err-msg'>Something went wrong!</p>
+            }
             <form className="form-wrapper">
                 <input
                     type="text"
@@ -50,7 +71,11 @@ function Signup() {
                     name='password'
                     onChange={handleChange}
                 />
-                <button>Sign Up</button>
+                <button disabled={loading}>
+                    {
+                        loading ? 'Signing up...' : 'Sign Up'
+                    }
+                </button>
             </form>
             <div className="footer">
                 <p>Have an account?</p>
