@@ -1,7 +1,7 @@
 const User = require('../models/user.model.js');
 const bcryptjs = require('bcryptjs');
 
-async function handleSignup(req, res) {
+async function handleSignup(req, res, next) {
     const { username, email, password } = req.body;
 
     try {
@@ -25,7 +25,7 @@ async function handleSignup(req, res) {
             data: newUser
         });
     } catch (err) {
-        return res.status(500).json({ error: err.message })
+        next(err)
     }
 };
 
