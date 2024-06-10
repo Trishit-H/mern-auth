@@ -1,5 +1,7 @@
+require('dotenv').config();
 const User = require('../models/user.model.js');
 const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const customErrorHandler = require('../utils/customError.js');
 
 async function handleSignup(req, res, next) {
@@ -32,7 +34,7 @@ async function handleSignup(req, res, next) {
 
 
 
-async function handleSignin() {
+async function handleSignin(req, res, next) {
     const { email, password } = req.body;
 
     try {
@@ -49,11 +51,22 @@ async function handleSignin() {
 
         // if password is not correct we return an error
         if (!isPasswordValid) {
-            return next(customErrorHandlder(401, 'Invalid Credentials!'))
+            return next(customErrorHandler(401, 'Invalid Credentials!'))
         }
 
+        // if everything is correct then create a token using jsonwebtoken
+        const token = jwt.sign({ id: validUser._id }, process.env.SECRET_KEY);
 
+        // here we remove the password from the validUser object because it is not safe to send the password in response
+        const { password: hashedPassword, ...rest } = validUser.toObject();
+
+        // expiry date of 1hr from the current time for the cookie
+        const expiryDate = new Date(Date.now() + 3600000);
+
+        // now store the token in the browser's cookies of the client
+        res.cookie('access_token', token, { httpOnly: true, expires: expiryDate }).status(200).json(rest)
     } catch (err) {
+        console.log(err);
         next(err)
     }
 }
