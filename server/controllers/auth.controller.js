@@ -64,7 +64,7 @@ async function handleSignin(req, res, next) {
         const expiryDate = new Date(Date.now() + 3600000);
 
         // now store the token in the browser's cookies of the client
-        res.cookie('access_token', token, { httpOnly: true, expires: expiryDate }).status(200).json(rest)
+        res.cookie('access_token', token, { httpOnly: true, expires: expiryDate }).status(200).json({ success: true, rest })
     } catch (err) {
         console.log(err);
         next(err)
