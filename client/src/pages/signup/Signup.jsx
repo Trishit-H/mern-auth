@@ -1,9 +1,11 @@
 import './signup.css';
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Signup() {
+
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({});
 
@@ -35,6 +37,11 @@ function Signup() {
             const data = await response.json();
 
             setLoading(false);
+
+            if (data.success) {
+                navigate('/sign-in');
+                return
+            }
 
             if (!data.success) {
                 setError(true);
